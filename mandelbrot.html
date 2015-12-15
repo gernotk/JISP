@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <script src="jisp.js" type="text/javascript"></script>
+  </head>
+  <body>
+    <canvas id="jisp_gfx" width="320" height="200" style="border: 1px solid grey"></canvas>
+    <p id="jisp_cli"></p>
+
+    <!-- JISP programs go here: -->
+    <script type="text/jisp">
+['export', [['list:ton',
+             ['lambda', ['n'],
+              ['if', ['>', 'n', 0],
+               ['cons', ['recur', ['-', 'n', 1]], 'n'],
+               ['cons', [], 0]]]],
+            ['list:mapcar',
+             ['lambda', ['fn', 'list'],
+              ['if', 'list',
+               ['cons', ['fn', ['car', 'list']], ['recur', 'fn', ['cdr', 'list']]]]]]]]
+    </script>
+
+    <script type="text/jisp">
+['export', [['complex', 
+	     ['lambda', ['re', 'im'],
+	      ['cons', 're', 'im']]],
+	    ['complex-re', 
+	     ['lambda', ['z'],
+	      ['nth', 0, 'z']]],
+             ['complex-im',
+              ['lambda', ['z'],
+               ['nth', 1, 'z']]],
+            ['complex-add',
+             ['lambda', ['z1', 'z2'],
+              ['complex', ['+', ['complex-re', 'z1'], ['complex-re', 'z2']],
+               ['+', ['complex-im', 'z1'], ['complex-im', 'z2']]]]],
+            ['complex-square', 
+             ['lambda', ['z'],
+              ['let', [['re', ['complex-re', 'z']],
+                       ['im', ['complex-im', 'z']]],
+               ['complex', ['-', ['*', 're', 're'], ['*', 'im', 'im']],
+                ['*', 2, 're', 'im']]]]],
+            ['complex-abs²', 
+             ['lambda', ['z'],
+              ['let', [['re', ['complex-re', 'z']],
+                       ['im', ['complex-im', 'z']]],
+               ['+', ['*', 're', 're'], ['*', 'im', 'im']]]]]]]
+    </script>
+
+    <script type="text/jisp">
+['let*', [['map-n-to-m',
+           ['lambda', ['n', 'nrange', 'mrange'],
+            ['let*', [['nmin', ['nth', 0, 'nrange']],
+                      ['nmax', ['nth', 1, 'nrange']],
+                      ['ndiff', ['-', 'nmax', 'nmin']],
+                      ['mmin', ['nth', 0, 'mrange']],
+                      ['mmax', ['nth', 1, 'mrange']],
+                      ['mdiff', ['-', 'mmax', 'mmin']],
+                           ['scale', ['/', 'mdiff', 'ndiff']]],
+             ['+', 'mmin', ['*', 'scale', 'n']]]]],
+          ['julia', 
+           ['lambda', ['c', 'max-abs²', 'max-iter'],
+            ['let', [['iterate', 
+                      ['lambda', ['z', 'remain-iter'],
+                       ['let*', [['z²', ['complex-square', 'z']],
+                                 ['znext', ['complex-add', 'z²', 'c']],
+                                 ['znext-abs²', ['complex-abs²', 'znext']]],
+                        ['if', ['and', 
+                                ['>', 'max-abs²', 'znext-abs²'],
+                                ['>', 'remain-iter', 0]],
+                         ['recur', 'znext', ['-', 'remain-iter', 1]],
+                         ['-', 'max-iter', 'remain-iter']]]]]],
+             ['iterate', 'c', 'max-iter']]]],
+          ['plot-julia',
+           ['lambda', ['zmin', 'zmax', 'xmax', 'ymax', 'zoom'],
+            ['let*', [['re-min', ['complex-re', 'zmin']],
+                      ['re-max', ['complex-re', 'zmax']],
+                      ['im-min', ['complex-im', 'zmin']],
+                      ['im-max', ['complex-im', 'zmax']],
+                      ['re-range', ['cons', 're-min', 're-max']],
+                      ['im-range', ['cons', 'im-min', 'im-max']],
+                      ['x-range', ['cons', 0, 'xmax']],
+                      ['y-range', ['cons', 0, 'ymax']],
+                      ['x-list', ['list:ton', 'xmax']],
+                      ['y-list', ['list:ton', 'ymax']],
+                      ['re-list',
+                       ['list:mapcar', 
+			['lambda', ['x'],
+			 ['map-n-to-m', 'x', 'x-range', 're-range']], 'x-list']],
+                      ['im-list',
+                       ['list:mapcar', 
+			['lambda', ['y'],
+			 ['map-n-to-m', 'y', 'y-range', 'im-range']], 'y-list']],
+                      ['julia%',
+                       ['lambda', ['x', 'y', 'max-abs²', 'max-iter'],
+                        ['julia', ['complex', ['nth', 'x', 're-list'], ['nth', 'y', 'im-list']], 'max-abs²', 'max-iter']]],
+                      ['color',
+                       ['lambda', ['iters', 'maxiter'],
+                        ['rgb',
+                         ['/', 
+                          ['*', ['-', 'maxiter', 'iters'], 255], 
+                          'maxiter'],
+                         0,
+                         0]]]],
+             ['list:mapcar', 
+	      ['lambda', ['y'],
+	       ['list:mapcar', 
+		['lambda', ['x'],
+		 ['pset', 'x', 'y', ['color', ['julia%', 'x', 'y', 1e3, 50], 50], 'zoom']], 'x-list']], 'y-list']]]]],
+ ['plot-julia', 
+  ['complex', -2, -1],
+  ['complex', 1, 1],
+  159, 99, 2]]
+    </script>
+
+  <script type="text/jisp">
+['print', ['quote', 'READY.']]
+  </script>
+  </body>
+</html>
