@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <script src="jisp.js" type="text/javascript"></script>
+  </head>
+  <body>
+    <canvas id="jisp_gfx" width="320" height="200" style="border: 1px solid grey"></canvas>
+    <p id="jisp_cli"></p>
+
+    <!-- JISP programs go here: -->
+    <script type="text/jisp">
+['export', [['fac', ['lambda', ['n'],
+		     ['if', ['=', 'n', 0],
+                      1,
+                      ['*', 'n', ['recur', ['-', 'n', 1]]]]]]]]
+    </script>
+    <script type="text/jisp">
+['print', ['fac', 5]]
+    </script>
+  </body>
+</html>

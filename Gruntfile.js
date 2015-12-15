@@ -15,7 +15,7 @@ module.exports = function(grunt) {
 	  'src/error.js',
 	  'src/thunk.js',
 	  'src/interpreter.js',
-	  'src/runtime.js',
+	  'src/runtime_native.js',
 	  'src/runner.js'
 	],
 	dest: 'jisp.js'

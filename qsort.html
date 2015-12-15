@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <script src="jisp.js" type="text/javascript"></script>
+  </head>
+  <body>
+    <canvas id="jisp_gfx" width="320" height="200" style="border: 1px solid grey"></canvas>
+    <p id="jisp_cli"></p>
+
+    <!-- JISP programs go here: -->
+    <script type="text/jisp">
+['export', 
+ [['list',
+   ['lambda', ['&rest', 'args'],
+    'args']],
+
+  ['list:filter',
+   ['lambda', ['fn', 'list'],
+    ['if', 'list',
+     ['if', ['fn', ['car', 'list']],
+      ['cons', ['car', 'list'], ['recur', 'fn', ['cdr', 'list']]],
+      ['recur', 'fn', ['cdr', 'list']]]]]],
+
+  ['list:sort',
+   ['lambda', ['cmp', 'list'],
+    ['if', ['>', ['length', 'list'], 1],
+     ['let*', [['pivot', ['car', 'list']],
+	       ['st-p', ['lambda', ['elt'],
+			 ['=', -1, ['cmp', 'elt', 'pivot']]]],
+	       ['ge-p', ['lambda', ['elt'],
+			 ['or', 
+			  ['=', 1, ['cmp', 'elt', 'pivot']],
+			  ['=', 0, ['cmp', 'elt', 'pivot']]]]],
+	       ['greater-or-equal', 
+                ['list:filter', 'ge-p', ['cdr', 'list']]],
+	       ['smaller', 
+                ['list:filter', 'st-p', ['cdr', 'list']]]],
+      ['cons', 
+       ['recur', 'cmp', 'smaller'], 
+       ['cons', 'pivot', 
+	['recur', 'cmp', 'greater-or-equal']]]],
+     'list']]]]]
+    </script>
+    <script type="text/jisp">
+['let', [['@array', ['list', 10, 4, 3, 7, 9, 1, 2, 0, 5, 8, 6]]],
+ ['progn',
+  ['print', ['quote', 'unsorted:']],
+  ['print', '@array'],
+  ['print', ['quote', 'sorted:']],
+  ['print',
+   ['list:sort', ['lambda', ['a', 'b'],
+		  ['if', ['>', 'a', 'b'],
+		   1,
+		   ['if', ['=', 'a', 'b'],
+		    0,
+		    -1]]], '@array']]]]
+    </script>
+  </body>
+</html>
