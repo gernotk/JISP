@@ -6,12 +6,25 @@
       extend = Tools.extend,
       Error;
 
+  /**
+   * A minimal error handling class for JISP. Provides a super minimal
+   * backtrace and stringification of runtime errors (but not parser
+   * errors).
+   *
+   * @param {String} msg
+   * @namespace {JISP}
+   * @constructor
+   */
   Error = JISP.Error = function (msg) {
     this.msg = msg;
     this.backtrace = [];
   };
 
   extend(Error.prototype, {
+    /**
+     * Creates a string from this error.
+     * @returns {String}
+     */
     stringify: function () {
       var msg = this.msg,
           backtrace = this.backtrace || [],
@@ -40,9 +53,24 @@
   });
 
   extend(Error, {
+    /**
+     * Takes a JISP value and reports whether this is in fact a
+     * runtime error.
+     *
+     * @param {jisp value}
+     * @returns {String}
+     * @static
+     */
     isError: function (value) {
       return value instanceof Error;
     },
+
+    /**
+     * A factory function for creating runtime errors.
+     *
+     * @param {String} error message
+     * @returns {JISP.Error}
+     */
     error: function (msg) {
       return new Error(msg);
     }

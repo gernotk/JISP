@@ -11,10 +11,13 @@
       Thunk;
 
   /**
-   * Implements a "thunk", an object that can 
-   + resolve recursive calls.
+   * Implements a 'thunk' -- an object that can execute recursive code
+   * w/o blowing the stack. A thunk can be progressively built by
+   * using 'pushFunction' and 'pushArgument', merged with another
+   * thunk, cloned and, well, executed (blockingly and
+   * non-blockingly).
    *
-   * @class Thunk
+   * @constructor Thunk
    * @namespace {JISP}
    */
   Thunk = JISP.Thunk = function (options) {
@@ -36,7 +39,6 @@
      * You may pass the original expression for better 
      * error reporting.
      *
-     * @method pushFunction
      * @param {Function} fn
      * @param {Number} nrOfArgsConsumed
      * @param {Object} expr (optional)
@@ -56,7 +58,6 @@
      * Takes a value of any type and puts it on 
      * the top of the argument stack.
      *
-     * @method pushArgument
      * @param {Any} arg
      * @chainable
      */
@@ -69,7 +70,6 @@
      * Returns true if the element is a function call
      * argument.
      *
-     * @method isArgument
      * @param {Any} arg
      * @return {Boolean}
      * @private
@@ -102,7 +102,6 @@
     /**
      * Returns true if there are no function calls left.
      *
-     * @method isConsumed
      * @return {Boolean}
      */
     isConsumed: function () {
@@ -112,7 +111,6 @@
     /**
      * Returns a copy of this thunk.
      *
-     * @method clone
      * @return {Thunk}
      */
     clone: function () {
@@ -134,8 +132,8 @@
     },
     
     /**
-     * Takes a thunk and merges it with this thunk. This
-     * is how we resolve recursions.
+     * Takes another thunk and merges it with this thunk. This is how
+     * we resolve recursions.
      *
      * @method merge
      * @parameter {Thunk} thunk
@@ -147,21 +145,21 @@
     },
 
     /**
-     * Executes the thunk by repeatedly consuming function 
-     * calls from its execution stack. In cases
-     * where a function is returning itself a thunk (i.e. it is recursing),
-     * the resulting thunk will be 'merged' with this thunk instead of executed
-     * directly.
+     * Executes the thunk by repeatedly consuming function calls from
+     * its execution stack. In cases where a function is returning
+     * itself a thunk (i.e. it is recursing), the resulting thunk will
+     * be 'merged' with this thunk instead of executed directly.
      *
-     * Note, the method operates on a copy of this thunk and, thus, 
-     * works non-destructively. This could be used to speed up compilations
-     * of recursive functions by reusing the original thunk.
+     * Note, the method operates on a copy of this thunk and, thus,
+     * works non-destructively. This could be used to speed up
+     * compilations of recursive functions by reusing the original
+     * thunk.
      *
-     * This method may runs quite a while and blocks the JS event queue.
-     * If you want intermediate screen updates you should use 'executeNonBlocking'
-     * that, however, comes with a performance penality.
+     * This method may run quite a while and will block the JS event
+     * queue. If you want intermediate screen updates you should use
+     * 'executeNonBlocking' that, however, comes with a performance
+     * penality.
      *
-     * @method execute
      * @return {Any}
      */
     execute: function() {
@@ -178,6 +176,16 @@
       return stack.pop();
     },
 
+    /**
+     * Executes the thunk non-blockingly by periodically interrupting
+     * the thunk's execution. Returns an ES6 promise -- so your
+     * browser should support them or provide a polyfill.
+     *
+     * @param {Number} interruptinterval (ms)
+     * @param {Number} minOPs - minimum number of OPs to be executed before interrupting
+     *
+     * @returns {Promise}
+     */
     executeNonBlocking: function (interruptInterval, minOPs) {
       var myCopy = this.clone(),
           stack = [],
@@ -217,11 +225,9 @@
     },
     
     /**
-     * Performs one method call on the execution stack and returns.
-     * The call is destructive and returns whether this thunk 
-     * is consumed.
+     * Executes the next OP on the execution stack and returns. The
+     * call is destructive and returns whether this thunk is consumed.
      *
-     * @method executeOnce
      * @parameter {Array} stack
      * @return {Boolean}
      * @private

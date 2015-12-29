@@ -12,53 +12,111 @@
       extend = Tools.extend,
       Interpreter;
 
+  /**
+   * Implements JISP's interpreter essentially providing a parse,
+   * compile and evaluate method which do what you would expect.
+   *
+   * The constructor takes a language runtime object being just a
+   * symbol table containing predefined functions. Almost anything
+   * what JISP is is defined by means of this runtime. The interpreter
+   * only provides an additional 'export' JISP special form making it
+   * easier to build and maintain JISP packages by defining symbols in
+   * the global scope if they are not already defined. It works
+   * similar to the 'let' block but ignores its body argument.
+   *
+   * It also accepts a 'foreign function' object containing javascript
+   * functions allowing to extend the standard runtime with side
+   * effectful or more performant functions as you wish.
+   *
+   * @constructor Interpreter
+   * @param {Object}
+   *  @param {Object} runtime - the interpreter's runtime library (use JISP.Runtime)
+   *  @param {Object} ffi - foreign functions callable from within JISP
+   * @namespace JISP
+   */
   Interpreter = JISP.Interpreter = function (options) {
     var rootScope;
 
-      rootScope = Object.create(extend(options.runtime, options.ffi, {
-	// special 'export' for building up libraries
-	'export': special(function (declarations) {
-          var symbols = declarations.map(function (decl) {
-	        return decl[0];
-	      }),
-	      initForms = declarations.map(function (decl) {
-		return decl[1];
-	      });
-              
-          symbols.forEach(function (symbol, i) {
-            if (typeof rootScope[symbol] === 'undefined') {
-              rootScope[symbol] = compileExpression(rootScope, initForms[i]).execute();
-            } else {
-              error('symbol "' + symbol + '" already defined');
-            }
-          });
-              
-	  return Interpreter.TRUE;
-    	})
-      }));
+    rootScope = Object.create(extend(options.runtime, options.ffi, {
+      // special 'export' for building up libraries
+      'export': special(function (declarations) {
+        var symbols = declarations.map(function (decl) {
+	  return decl[0];
+	}),
+	    initForms = declarations.map(function (decl) {
+	      return decl[1];
+	    });
+        
+        symbols.forEach(function (symbol, i) {
+          if (typeof rootScope[symbol] === 'undefined') {
+            rootScope[symbol] = compileExpression(rootScope, initForms[i]).execute();
+          } else {
+            error('symbol "' + symbol + '" already defined');
+          }
+        });
+        
+	return Interpreter.TRUE;
+      })
+    }));
     
     this.options = options;
     
+    /** Compiles a JISP expression into an executable 'thunk'.
+      *
+      * @param {Array} 
+      * @returns {JISP.Thunk}
+      */
     this.compile = function (expr) {
       return compileExpression(rootScope, expr);
     };
   };
 
   extend(Interpreter.prototype, {
+    /** 
+     * Takes a JISP source code string and returns a parsed
+     * expression.
+     *
+     * @param {String} 
+     * @returns {Array}
+     */
     parse: function (srcRaw) {
       return parseExpression(srcRaw);
     },
+    /** 
+     * Takes a JISP expression and returns its string representation.
+     *
+     * @param {Array} 
+     * @returns {String}
+     */
     deparse: function (expr) {
       return deparseExpression(expr);
     },
+
+    /** 
+     * Evaluates a parsed JISP expression blockingly and until
+     * termination and returns a JISP value (a JS string, number or
+     * array) if the code terminated. A runtime error raises and
+     * exception.
+     *
+     * @param {Array}
+     */
     evaluate: function (expr) {
       return this.compile(expr).execute();
     },
+
+    /** 
+     * Does the same thing as 'evaluate' but runs
+     * non-blockingly. Returns a promise that may be fulfilled upon
+     * termination or broken with a runtime error.
+     *
+     * @param {Array}
+     * @returns {Promise}
+     */
     evaluateNonBlocking: function (expr) {
       var options = this.options,
           interruptInterval = options.interruptInterval || 250,
           minOPs = options.minimumOPs || 1000;
-            
+      
       return this.compile(expr).executeNonBlocking(interruptInterval, minOPs);
     }
   });
@@ -95,7 +153,7 @@
   function deparseExpression(expr) {
     return JSON.stringify(expr);
   }
-    
+  
   function compileExpression(scope, expr) {
     var compileStack = [expr],
         thunk = new Thunk(),
@@ -103,7 +161,7 @@
 
     while (compileStack.length > 0) {
       expr = compileStack.pop();
-            
+      
       if (isAtom(expr)) {
         first = evalAtom(scope, expr);
         if (isError(first)) {
@@ -156,7 +214,7 @@
 
   function evalAtom(scope, expr) {
     var result;
-        
+    
     if (isSymbol(expr)) {
       result = evalSymbol(scope, expr);
     } else if (isNumber(expr)) {
@@ -168,7 +226,7 @@
     } else {
       result = error('illegal expression');
     }
-        
+    
     return result;
   }
 
@@ -209,31 +267,31 @@
   function evalNil(expr) {
     return isEmptyList(expr) ? expr : Interpreter.NIL;
   }
-    
+  
   function evalTrue() {
     return Interpreter.TRUE;
   }
-    
+  
   function evalSymbol(scope, symbol) {
     var value = scope[symbol];
     
     if (typeof value === 'undefined') {
       return error('unknown symbol "' + symbol + '"');
     }
-        
+    
     return value;
   }
-    
+  
   function evalNumber(scope, number) {
     return number;
   }
 
   function special(fn) {
     fn.special = true;
-        
+    
     return fn;
   }
-    
+  
   function macro(fn) {
     fn.macro = true;
 
