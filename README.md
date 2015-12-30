@@ -1,4 +1,4 @@
-# JISP (JavaScript list processing)
+# JISP
 
 ## What is JISP?
 
@@ -28,21 +28,48 @@ Well, JISP is your regular half-assed toy programming language of which there ar
 
 ```
 ['+', 1, 2, 3, ['*', 2, 2], 5]
+//-> 15
 ```
 
 * symbols which can replace literal strings:
 
 ```
 ['quote', 'this is a simple string literal']
+//-> 'this is a simple string literal'
 ```
 
-* anonymous but recursive function definitions:
+* lexical bindings:
+
+```
+['let*', 
+  [['foo', 4],
+   ['foo²', ['*', 'foo', 'foo']]],
+  ['+', 'foo²', 'foo²']]
+```
+
+* conditional branching:
+
+```
+['if', ['>', 'n', 100],
+  ['quote', 'n lt than 100'],
+  ['quote', 'n se than 100']]
+```
+
+* anonymous but first class and recursive functions:
 
 ```
 [['lambda', ['n'],
   ['if', ['=', 'n', 0],
     1,
     ['recur', ['-', 'n', 1]]]], 3]
+//-> 3! = 6
+
+['let',
+  [['fac', ['lambda', ['n'],
+             ['if', ['=', 'n', 0'],
+              1,
+              ['recur', ['-', 'n', 1]]]]]],
+  ['fac', 3]]
 //-> 3! = 6
 ```
 
@@ -54,11 +81,10 @@ Well, JISP is your regular half-assed toy programming language of which there ar
 //-> [1, 2, 3]
 ```
 
-* lexical bindings:
+* in the furture: macros to make the language more extensible
 
-```
-['let*', 
-  [['foo', 4],
-   ['foo²', ['*', 'foo', 'foo']]],
-  ['+', 'foo²', 'foo²']]
-```
+## Interpreter gimmicks
+
+* automatic trampolining on the stack
+* foreign JS function interface
+* non-blocking program execution
