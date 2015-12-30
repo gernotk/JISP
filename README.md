@@ -81,7 +81,7 @@ Well, JISP is your regular half-assed toy programming language of which there ar
 //-> [1, 2, 3]
 ```
 
-* in the furture: macros to make the language more extensible
+* in the future, hopefully: macros to make the language more extensible
 
 ## Interpreter gimmicks
 
