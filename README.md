@@ -6,6 +6,10 @@ JISP stands for "JavaScript List Processing" and is a minimal strict functional,
 
 Well, JISP is your regular half-assed toy programming language of which there are many more on github. One thing that may be special about this one is its support for anonymous, recursive functions that are guaranteed not to blow the JavaScript stack as the intepreter is automatically trampolining recursive calls for you. Furthermore, there is built-in support for non-blocking execution of JISP programs so long running programs are not paused by the browser and you can have intermediate textual or graphical updates. Programming in JISP is therefore a much more joyful experience than in other slow toy programming languages.
 
+## How to build
+
+Just install npm and run Grunt on the repository. A file named "jisp.js" will be generated. To try out the interpreter just open one of the example programs in your browser: <a href="https://github.com/gernotk/JISP/blob/master/factorial.html">factorial.html</a>, <a href="https://github.com/gernotk/JISP/blob/master/filter.html">filter.html</a>, <a href="https://github.com/gernotk/JISP/blob/master/qsort.html">qsort.html</a> and <a href="https://github.com/gernotk/JISP/blob/master/mandelbrot.html">mandelbrot.html</a>.
+
 ## Key language features
 
 * lists
@@ -22,6 +26,9 @@ Well, JISP is your regular half-assed toy programming language of which there ar
 
 ['cons', 1, ['quote', [2, 3]]]
 //-> [1, 2, 3]
+
+['nth', 2, ['quote', [1, 2, 3]]]
+//-> 3
 ```
 
 * numbers and basic arithmetics:
@@ -45,6 +52,7 @@ Well, JISP is your regular half-assed toy programming language of which there ar
   [['foo', 4],
    ['foo²', ['*', 'foo', 'foo']]],
   ['+', 'foo²', 'foo²']]
+//-> 32
 ```
 
 * conditional branching:
@@ -53,6 +61,18 @@ Well, JISP is your regular half-assed toy programming language of which there ar
 ['if', ['>', 'n', 100],
   ['quote', 'n lt than 100'],
   ['quote', 'n se than 100']]
+```
+
+* basic logic:
+```
+['or', 'NIL', 42]
+//-> 42
+
+['and', 'NIL', 42]
+//-> NIL
+
+['or', ['and', 'NIL', 42], ['and', 1, 2]]
+//-> 2
 ```
 
 * anonymous but first class and recursive functions:
@@ -85,6 +105,32 @@ Well, JISP is your regular half-assed toy programming language of which there ar
 
 ## Interpreter gimmicks
 
-* automatic trampolining on the stack
-* foreign JS function interface
+* Don't worry about recursions or even mutual recursive functions: The interpreter's built-in automatic trampolining will preserve your precious stack.
+
+* A foreign function interface to extend the interpreter. Have a look at <a href="https://github.com/gernotk/JISP/blob/master/src/runner.js">src/runner.js</a> to find out how to use that feature to support easy graphics.
+
+```
+var jisp = new JISP.Interpreter({
+             runtime: JISP.runtime,
+             ffi: {
+               // creates a 'print' function in the 
+               // global namespace of JISP:
+               print: function (val) {
+                 var str;
+                 
+                 if (Interpreter.isSymbol(val) ||
+                     Interpreter.isNumber(val)) {
+                   str = val;
+                 } else {
+                   str = JSON.stringify(val);
+                 }
+                 
+                 $container.append(str + '<br/>');
+                 
+                 return Interpreter.TRUE;
+               }
+             }
+           });
+```
+
 * non-blocking program execution
