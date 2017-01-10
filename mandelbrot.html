@@ -21,6 +21,10 @@
                ['cons', ['fn', ['car', 'list']], ['recur', 'fn', ['cdr', 'list']]]]]]]]
     </script>
 
+   <script type="text/jisp">
+['print', ['quote', 'canvas-size = '], ['canvasWidth'], ['quote', 'x'], ['canvasHeight']]
+   </script>
+
     <script type="text/jisp">
 ['export', [['complex', 
 	     ['lambda', ['re', 'im'],
@@ -49,7 +53,8 @@
     </script>
 
     <script type="text/jisp">
-['let*', [['map-n-to-m',
+['let*', [['SPEEDUP', 4],
+          ['map-n-to-m',
            ['lambda', ['n', 'nrange', 'mrange'],
             ['let*', [['nmin', ['nth', 0, 'nrange']],
                       ['nmax', ['nth', 1, 'nrange']],
@@ -111,7 +116,9 @@
  ['plot-julia', 
   ['complex', -2, -1],
   ['complex', 1, 1],
-  159, 99, 2]]
+  ['-', ['/', ['canvasWidth'], 'SPEEDUP'], 1],
+  ['-', ['/', ['canvasHeight'], 'SPEEDUP'], 1],
+  'SPEEDUP']]
     </script>
 
   <script type="text/jisp">

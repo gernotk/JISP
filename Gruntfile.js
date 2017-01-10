@@ -4,21 +4,22 @@ module.exports = function(grunt) {
     jshint: {
       files: ['Gruntfile.js', 'src/**/*.js'],
       options: {
+        reporterOutput: ""
       }
     },
     concat: {
       dist: {
-	src: [
-	  'lib/**.js',
-	  'src/jisp.js',
-	  'src/tools.js',
-	  'src/error.js',
-	  'src/thunk.js',
-	  'src/interpreter.js',
-	  'src/runtime_native.js',
-	  'src/runner.js'
-	],
-	dest: 'jisp.js'
+	      src: [
+	        'lib/**.js',
+	        'src/jisp.js',
+	        'src/tools.js',
+	        'src/error.js',
+	        'src/thunk.js',
+	        'src/interpreter.js',
+	        'src/runtime_native.js',
+	        'src/runner.js'
+	      ],
+	      dest: 'jisp.js'
       }
     }
   });
