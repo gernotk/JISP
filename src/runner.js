@@ -9,6 +9,8 @@
 
   // jQuery plugin for embedding
   $.fn.jispRun = function (options) {
+    options = options || {};
+
     var $this = this,
         $text = $(options.cli || '#jisp_cli'),
         $gfx = $(options.gfx || '#jisp_gfx'),
@@ -80,13 +82,4 @@
       $text.append('<pre>' + str + '</pre>');
     }
   };
-  
-  $(document).ready(function () {
-    var $scripts = $('script[type="text/jisp"]');
-
-    $scripts.jispRun({
-      cli: '#jisp_cli',
-      gfx: '#jisp_gfx'
-    });
-  });
 }(window));

@@ -7,7 +7,7 @@
   <body>
     <canvas id="jisp_gfx" width="320" height="200" style="border: 1px solid grey"></canvas>
     <p id="jisp_cli"></p>
-
+   
     <!-- JISP programs go here: -->
     <script type="text/jisp">
 ['export', [['list:ton',
@@ -121,8 +121,13 @@
   'SPEEDUP']]
     </script>
 
-  <script type="text/jisp">
+    <script type="text/jisp">
 ['print', ['quote', 'READY.']]
-  </script>
+    </script>
+
+    <script type="text/javascript">
+      $('script[type="text/jisp"]').jispRun();
+    </script>
+  
   </body>
 </html>
