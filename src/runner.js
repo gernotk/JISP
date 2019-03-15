@@ -78,7 +78,7 @@
             return val.stringify ? val.stringify() : JSON.stringify(val);
           }),
           str = strs.join(' ');
-          
+      
       $text.append('<pre>' + str + '</pre>');
     }
   };

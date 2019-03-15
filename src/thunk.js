@@ -170,7 +170,7 @@
       this.backtrace = backtrace;
       
       while (!myCopy.isConsumed()) {
-	myCopy.executeOnce(stack);
+	      myCopy.executeOnce(stack);
       }
 
       return stack.pop();
@@ -238,7 +238,7 @@
           elt, fn, nrOfArgs, fexpr, fnArgs, i, returnVal;
       
       if (!this.isConsumed()) {
-	elt = this.pop();
+	      elt = this.pop();
 
         if (this.isError(elt)) {
           // compiler error

@@ -41,11 +41,11 @@
       // special 'export' for building up libraries
       'export': special(function (declarations) {
         var symbols = declarations.map(function (decl) {
-	  return decl[0];
-	}),
-	    initForms = declarations.map(function (decl) {
-	      return decl[1];
-	    });
+	        return decl[0];
+	      }),
+	          initForms = declarations.map(function (decl) {
+	            return decl[1];
+	          });
         
         symbols.forEach(function (symbol, i) {
           if (typeof rootScope[symbol] === 'undefined') {
@@ -55,17 +55,17 @@
           }
         });
         
-	return Interpreter.TRUE;
+	      return Interpreter.TRUE;
       })
     }));
     
     this.options = options;
     
     /** Compiles a JISP expression into an executable 'thunk'.
-      *
-      * @param {Array} 
-      * @returns {JISP.Thunk}
-      */
+     *
+     * @param {Array} 
+     * @returns {JISP.Thunk}
+     */
     this.compile = function (expr) {
       return compileExpression(rootScope, expr);
     };
@@ -173,7 +173,7 @@
       } else if (isList(expr)) {
         first = expr[0];
         rest = expr.slice(1);
-	
+	      
         if (isList(first)) {
           // special case: rewrite immediate function call
           compileStack.push(['call', first].concat(rest));

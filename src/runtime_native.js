@@ -95,7 +95,7 @@
     },
     '-': function () {
       var len = arguments.length,
-	  result, n, i;
+	        result, n, i;
       
       if (len === 1) {
         n = arguments[0];
@@ -218,7 +218,7 @@
     }),
     'call': function () {
       var args = Array.prototype.slice.call(arguments),
-	  fn = args.shift();
+	        fn = args.shift();
       
       return fn.apply(this, args);
     },
@@ -294,7 +294,7 @@
     
     'progn': special(function () {
       var scope = this,
-	  thunk = new Thunk(),
+	        thunk = new Thunk(),
           exprs = Array.prototype.slice.call(arguments),
           firstExpr = exprs.shift();
       
@@ -313,7 +313,7 @@
     // once we've got the 'macro' special OP
     'let': macro(function (declarations, body) {
       var vars = declarations.map(function (declaration) {
-	return declaration[0];
+	      return declaration[0];
       }),
           initForms = declarations.map(function (declaration) {
             return declaration[1];
